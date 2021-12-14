@@ -4,10 +4,10 @@ import { todosState } from '../atoms';
 import CreateTodo from './CreateTodo';
 import Todo from './Todo';
 
+const List = styled.ul``;
+
 const TodoList = () => {
   const todos = useRecoilValue(todosState);
-
-  const List = styled.ul``;
 
   return (
     <div>
