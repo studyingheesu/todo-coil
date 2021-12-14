@@ -1,12 +1,14 @@
 import { useForm } from 'react-hook-form';
-import { useSetRecoilState } from 'recoil';
-import { todosState } from '../atoms';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { todoFilterState, todosState, CATEGORY } from '../atoms';
 
 interface IForm {
   todo: string;
 }
 const CreateTodo = () => {
   const setTodos = useSetRecoilState(todosState);
+  const filter = useRecoilValue(todoFilterState);
+  const selectedCategory: CATEGORY = filter === 'ALL' ? 'TO_DO' : filter;
 
   const {
     register,
@@ -20,7 +22,7 @@ const CreateTodo = () => {
       {
         id: Date.now(),
         text: todo,
-        category: 'TO_DO',
+        category: selectedCategory,
       },
     ]);
 

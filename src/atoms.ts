@@ -1,6 +1,6 @@
 import { atom, selector } from 'recoil';
 
-type CATEGORY = 'TO_DO' | 'DOING' | 'DONE';
+export type CATEGORY = 'TO_DO' | 'DOING' | 'DONE';
 export interface ITodo {
   text: string;
   id: number;
