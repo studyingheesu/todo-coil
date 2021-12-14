@@ -23,6 +23,10 @@ const Todo = (todo: ITodo) => {
     setTodos([...todos.slice(0, index), newTodo, ...todos.slice(index + 1)]);
   };
 
+  const handleClickDelete = () => {
+    setTodos([...todos.slice(0, index), ...todos.slice(index + 1)]);
+  };
+
   return (
     <Item className={`${category}`}>
       <span>{text}</span>
@@ -41,6 +45,7 @@ const Todo = (todo: ITodo) => {
           Done
         </DoneButton>
       )}
+      <button onClick={handleClickDelete}>Delete</button>
     </Item>
   );
 };
