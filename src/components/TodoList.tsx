@@ -15,7 +15,7 @@ const toDosState = atom<IToDo[]>({
 interface IForm {
   todo: string;
 }
-const ToDoList = () => {
+const TodoList = () => {
   const [todos, setTodos] = useRecoilState(toDosState);
 
   const {
@@ -62,4 +62,4 @@ const ToDoList = () => {
   );
 };
 
-export default ToDoList;
+export default TodoList;

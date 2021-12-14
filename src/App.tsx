@@ -1,7 +1,7 @@
 import { createGlobalStyle } from 'styled-components';
 
 import './index.css';
-import ToDoList from './components/ToDoList';
+import TodoList from './components/TodoList';
 
 const GlobalStyle = createGlobalStyle`
 
@@ -15,7 +15,7 @@ function App() {
   return (
     <>
       <GlobalStyle />
-      <ToDoList />
+      <TodoList />
     </>
   );
 }
