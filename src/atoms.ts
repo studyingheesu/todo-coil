@@ -7,9 +7,24 @@ export interface ITodo {
   category: CATEGORY;
 }
 
-export const todosState = atom<ITodo[]>({
+const LOCAL_STORAGE_KEY = 'todo';
+const localStorageData = localStorage.getItem(LOCAL_STORAGE_KEY);
+const initalState = localStorageData ? JSON.parse(localStorageData) : [];
+
+const _todosState = atom<ITodo[]>({
   key: 'todo',
-  default: [],
+  default: initalState,
+});
+
+export const todosState = selector<ITodo[]>({
+  key: 'persistentTodo',
+  get: ({ get }) => {
+    return get(_todosState);
+  },
+  set: ({ set }, newValue) => {
+    set(_todosState, newValue);
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(newValue));
+  },
 });
 
 export type FILTER = CATEGORY | 'ALL';
@@ -22,7 +37,7 @@ export const todoFilterState = atom<FILTER>({
 export const filteredTodoState = selector({
   key: 'todoFiltered',
   get: ({ get }) => {
-    const todos = get(todosState);
+    const todos = get(_todosState);
     const filter = get(todoFilterState);
 
     if (filter === 'ALL') {
