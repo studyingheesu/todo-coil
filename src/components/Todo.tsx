@@ -1,10 +1,10 @@
 import React from 'react';
 import { useState } from 'react';
-import { SubmitHandler, useForm } from 'react-hook-form';
 import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 import { categoriesState, CATEGORY, ITodo, todosState } from '../atoms';
+import CreateCategory from './CreateCategory';
 
 const Item = styled.li`
   background-color: ${(prop) => prop.theme.secondBgColor};
@@ -33,29 +33,11 @@ const Category = styled.div`
     border: 0;
   }
 `;
-const NewCategoryForm = styled.form`
-  input {
-    width: 100%;
-    border: 0;
-  }
-`;
-
-interface IForm {
-  newCategoryName: string;
-}
 
 const Todo = (todo: ITodo) => {
   const [todos, setTodos] = useRecoilState(todosState);
   const [categories, setCategories] = useRecoilState(categoriesState);
 
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm<IForm>({
-    mode: 'onChange',
-  });
   const [isCreatingCategory, setIsCreatingCategory] = useState(false);
 
   const { category, text, id } = todo;
@@ -80,16 +62,18 @@ const Todo = (todo: ITodo) => {
     }
   };
 
-  const handleClickDelete = () => {
+  const handleClickDelete = async () => {
     setTodos([...todos.slice(0, index), ...todos.slice(index + 1)]);
   };
 
-  const onValid: SubmitHandler<IForm> = ({ newCategoryName }) => {
-    changeCategory(newCategoryName);
-    setCategories((categories) => [...categories, newCategoryName]);
-
-    setIsCreatingCategory(false);
-    reset();
+  const onCreateCategory = async (newCategoryName: CATEGORY) => {
+    if (categories.includes(newCategoryName)) {
+      throw new Error('Category already exists');
+    } else {
+      changeCategory(newCategoryName);
+      setCategories((categories) => [...categories, newCategoryName]);
+      setIsCreatingCategory(false);
+    }
   };
 
   return (
@@ -97,25 +81,7 @@ const Todo = (todo: ITodo) => {
       <Text>{text}</Text>
       {isCreatingCategory ? (
         <Category>
-          <NewCategoryForm onSubmit={handleSubmit(onValid)}>
-            <input
-              {...register('newCategoryName', {
-                required: 'The field is empty',
-                pattern: {
-                  value: /[^_].*/,
-                  message: "Category name can't be started with _",
-                },
-                validate: (value) => {
-                  if (categories.includes(value)) {
-                    return 'Category already exists';
-                  } else {
-                    return true;
-                  }
-                },
-              })}
-            />
-          </NewCategoryForm>
-          {errors?.newCategoryName?.message && <span>{errors.newCategoryName.message}</span>}
+          <CreateCategory onSubmit={onCreateCategory} />
         </Category>
       ) : (
         <Category>
