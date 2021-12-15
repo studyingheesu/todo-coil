@@ -1,7 +1,14 @@
 import { useForm } from 'react-hook-form';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
+import styled from 'styled-components';
 import { todoFilterState, todosState, CATEGORY } from '../atoms';
 
+const Form = styled.form`
+  display: flex;
+`;
+const Input = styled.input`
+  flex-grow: 1;
+`;
 interface IForm {
   todo: string;
 }
@@ -10,12 +17,7 @@ const CreateTodo = () => {
   const filter = useRecoilValue(todoFilterState);
   const selectedCategory: CATEGORY = filter === 'ALL' ? 'TO_DO' : filter;
 
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    formState: { errors },
-  } = useForm<IForm>();
+  const { register, handleSubmit, setValue } = useForm<IForm>();
   const onValid = ({ todo }: IForm) => {
     setTodos((todos) => [
       ...todos,
@@ -30,15 +32,10 @@ const CreateTodo = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit(onValid)}>
-      <p>
-        <input {...register('todo', { required: 'Todo is empty' })} placeholder="Write a Todo" />
-        <button>Add</button>
-      </p>
-      <p>
-        <span>{errors?.todo?.message}</span>
-      </p>
-    </form>
+    <Form onSubmit={handleSubmit(onValid)}>
+      <Input {...register('todo', { required: 'Todo is empty' })} placeholder="Write a Todo" />
+      <button>Add</button>
+    </Form>
   );
 };
 
