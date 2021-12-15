@@ -45,7 +45,7 @@ const Todo = (todo: ITodo) => {
 
   const NEW_CATEGORY_KEY = '_new';
 
-  const changeCategory = (category: CATEGORY) => {
+  const _changeCategory = (category: CATEGORY) => {
     const changedTodo: ITodo = {
       ...todo,
       category: category,
@@ -54,11 +54,11 @@ const Todo = (todo: ITodo) => {
     setTodos([...todos.slice(0, index), changedTodo, ...todos.slice(index + 1)]);
   };
 
-  const handleChange = ({ target: { value } }: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleChangeCategory = ({ target: { value } }: React.ChangeEvent<HTMLSelectElement>) => {
     if (value === NEW_CATEGORY_KEY) {
       setIsCreatingCategory(true);
     } else {
-      changeCategory(value as CATEGORY);
+      _changeCategory(value as CATEGORY);
     }
   };
 
@@ -66,11 +66,11 @@ const Todo = (todo: ITodo) => {
     setTodos([...todos.slice(0, index), ...todos.slice(index + 1)]);
   };
 
-  const onCreateCategory = async (newCategoryName: CATEGORY) => {
+  const handleCreateCategory = async (newCategoryName: CATEGORY) => {
     if (categories.includes(newCategoryName)) {
       throw new Error('Category already exists');
     } else {
-      changeCategory(newCategoryName);
+      _changeCategory(newCategoryName);
       setCategories((categories) => [...categories, newCategoryName]);
       setIsCreatingCategory(false);
     }
@@ -81,11 +81,11 @@ const Todo = (todo: ITodo) => {
       <Text>{text}</Text>
       {isCreatingCategory ? (
         <Category>
-          <CreateCategory onSubmit={onCreateCategory} />
+          <CreateCategory onSubmit={handleCreateCategory} />
         </Category>
       ) : (
         <Category>
-          <select name="category" onChange={handleChange} defaultValue={todo.category}>
+          <select name="category" onChange={handleChangeCategory} defaultValue={todo.category}>
             {categories.map((category) => (
               <option key={category} value={category}>
                 {category}

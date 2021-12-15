@@ -29,7 +29,7 @@ const TodoList = () => {
   const todos = useRecoilValue<ITodo[]>(filteredTodoState);
   const [categories, setCategories] = useRecoilState<CATEGORY[]>(categoriesState);
   const [filter, setFilter] = useRecoilState<FILTER>(todoFilterState);
-  const handleChange = ({ target: { value } }: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleChangeFilter = ({ target: { value } }: React.ChangeEvent<HTMLSelectElement>) => {
     setFilter(value as FILTER);
   };
   const handleDeleteCategory = () => {
@@ -44,7 +44,7 @@ const TodoList = () => {
     <Container>
       <CreateTodo />
       <FilterContainer>
-        <Filter value={filter} onChange={handleChange}>
+        <Filter value={filter} onChange={handleChangeFilter}>
           <option value={FILTER_ALL} key={FILTER_ALL}>
             All
           </option>
