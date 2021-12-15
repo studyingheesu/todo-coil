@@ -2,34 +2,51 @@ import { atom, selector } from 'recoil';
 
 export type CATEGORY = string;
 
+const CATEGORIES_LOCAL_STORAGE_KEY = 'categories';
+const localStorageCategoriesData = localStorage.getItem(CATEGORIES_LOCAL_STORAGE_KEY);
+const initalCategoriesState = localStorageCategoriesData
+  ? JSON.parse(localStorageCategoriesData)
+  : ['Todo', 'Doing', 'Done'];
+
+const _categoriesState = atom<CATEGORY[]>({
+  key: 'categories',
+  default: initalCategoriesState,
+});
+
+export const categoriesState = selector<CATEGORY[]>({
+  key: 'persistentCategories',
+  get: ({ get }) => {
+    return get(_categoriesState);
+  },
+  set: ({ set }, newValue) => {
+    set(_categoriesState, newValue);
+    localStorage.setItem(CATEGORIES_LOCAL_STORAGE_KEY, JSON.stringify(newValue));
+  },
+});
+
 export interface ITodo {
   text: string;
   id: number;
   category: CATEGORY;
 }
 
-const LOCAL_STORAGE_KEY = 'todo';
-const localStorageData = localStorage.getItem(LOCAL_STORAGE_KEY);
-const initalState = localStorageData ? JSON.parse(localStorageData) : [];
-
-export const categoriesState = atom<CATEGORY[]>({
-  key: 'categories',
-  default: ['Todo', 'Doing', 'Done'],
-});
+const TODOS_LOCAL_STORAGE_KEY = 'todo';
+const localStorageTodosData = localStorage.getItem(TODOS_LOCAL_STORAGE_KEY);
+const initalTodosState = localStorageTodosData ? JSON.parse(localStorageTodosData) : [];
 
 const _todosState = atom<ITodo[]>({
-  key: 'todo',
-  default: initalState,
+  key: 'todos',
+  default: initalTodosState,
 });
 
 export const todosState = selector<ITodo[]>({
-  key: 'persistentTodo',
+  key: 'persistentTodos',
   get: ({ get }) => {
     return get(_todosState);
   },
   set: ({ set }, newValue) => {
     set(_todosState, newValue);
-    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(newValue));
+    localStorage.setItem(TODOS_LOCAL_STORAGE_KEY, JSON.stringify(newValue));
   },
 });
 
