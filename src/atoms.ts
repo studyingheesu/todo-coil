@@ -50,11 +50,12 @@ export const todosState = selector<ITodo[]>({
   },
 });
 
-export type FILTER = CATEGORY | 'ALL';
+export const FILTER_ALL = '_ALL';
+export type FILTER = '_ALL' | CATEGORY;
 
 export const todoFilterState = atom<FILTER>({
   key: 'todoFilter',
-  default: 'ALL',
+  default: FILTER_ALL,
 });
 
 export const filteredTodoState = selector({
@@ -63,7 +64,7 @@ export const filteredTodoState = selector({
     const todos = get(_todosState);
     const filter = get(todoFilterState);
 
-    if (filter === 'ALL') {
+    if (filter === FILTER_ALL) {
       return todos;
     } else {
       return todos.filter((todo) => todo.category === filter);
