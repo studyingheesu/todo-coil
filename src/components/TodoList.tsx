@@ -1,6 +1,6 @@
 import { useRecoilState, useRecoilValue } from 'recoil';
 import styled from 'styled-components';
-import { FILTER, filteredTodoState, todoFilterState } from '../atoms';
+import { categoriesState, FILTER, filteredTodoState, todoFilterState } from '../atoms';
 import CreateTodo from './CreateTodo';
 import Todo from './Todo';
 
@@ -23,6 +23,7 @@ const Filter = styled.select`
 
 const TodoList = () => {
   const todos = useRecoilValue(filteredTodoState);
+  const categories = useRecoilValue(categoriesState);
   const [filter, setFilter] = useRecoilState(todoFilterState);
   const handleChange = ({ target: { value } }: React.ChangeEvent<HTMLSelectElement>) => {
     setFilter(value as FILTER);
@@ -33,10 +34,14 @@ const TodoList = () => {
       <CreateTodo />
       <FilterContainer>
         <Filter value={filter} onChange={handleChange}>
-          <option value="ALL">All</option>
-          <option value="TO_DO">To Do</option>
-          <option value="DOING">Doing</option>
-          <option value="DONE">Done</option>
+          <option value="ALL" key="ALL">
+            All
+          </option>
+          {categories.map((category) => (
+            <option key={category} value={category}>
+              {category}
+            </option>
+          ))}
         </Filter>
       </FilterContainer>
       <List>

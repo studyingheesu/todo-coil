@@ -1,6 +1,7 @@
 import { atom, selector } from 'recoil';
 
-export type CATEGORY = 'TO_DO' | 'DOING' | 'DONE';
+export type CATEGORY = string;
+
 export interface ITodo {
   text: string;
   id: number;
@@ -10,6 +11,11 @@ export interface ITodo {
 const LOCAL_STORAGE_KEY = 'todo';
 const localStorageData = localStorage.getItem(LOCAL_STORAGE_KEY);
 const initalState = localStorageData ? JSON.parse(localStorageData) : [];
+
+export const categoriesState = atom<CATEGORY[]>({
+  key: 'categories',
+  default: ['Todo', 'Doing', 'Done'],
+});
 
 const _todosState = atom<ITodo[]>({
   key: 'todo',

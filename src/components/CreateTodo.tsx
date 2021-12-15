@@ -1,7 +1,7 @@
 import { useForm } from 'react-hook-form';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
-import { todoFilterState, todosState, CATEGORY } from '../atoms';
+import { todoFilterState, todosState, CATEGORY, categoriesState } from '../atoms';
 
 const Form = styled.form`
   display: flex;
@@ -14,8 +14,11 @@ interface IForm {
 }
 const CreateTodo = () => {
   const setTodos = useSetRecoilState(todosState);
+  const categories = useRecoilValue(categoriesState);
   const filter = useRecoilValue(todoFilterState);
-  const selectedCategory: CATEGORY = filter === 'ALL' ? 'TO_DO' : filter;
+
+  const defaultCategory = categories[0];
+  const selectedCategory: CATEGORY = filter === 'ALL' ? defaultCategory : filter;
 
   const { register, handleSubmit, setValue } = useForm<IForm>();
   const onValid = ({ todo }: IForm) => {
