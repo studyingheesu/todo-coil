@@ -1,10 +1,10 @@
 import React from 'react';
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
-import { categoriesState, ITodo, todosState } from '../atoms';
+import { categoriesState, CATEGORY, ITodo, todosState } from '../atoms';
 
 const Item = styled.li`
   background-color: ${(prop) => prop.theme.secondBgColor};
@@ -16,7 +16,6 @@ const Text = styled.span`
   margin-left: 6px;
 `;
 
-const ButtonContainer = styled.div``;
 const Button = styled.button`
   border: 0;
   border-radius: 5px;
@@ -27,7 +26,23 @@ const Button = styled.button`
     background-color: rgba(0, 255, 0, 0.5);
   }
 `;
-const Category = styled.span``;
+const Category = styled.div`
+  width: 80px;
+  & > * {
+    width: 100%;
+    border: 0;
+  }
+`;
+const NewCategoryForm = styled.form`
+  input {
+    width: 100%;
+    border: 0;
+  }
+`;
+
+interface IForm {
+  newCategoryName: string;
+}
 
 const Todo = (todo: ITodo) => {
   const [todos, setTodos] = useRecoilState(todosState);
@@ -36,9 +51,11 @@ const Todo = (todo: ITodo) => {
   const {
     register,
     handleSubmit,
-    setValue,
+    reset,
     formState: { errors },
-  } = useForm();
+  } = useForm<IForm>({
+    mode: 'onChange',
+  });
   const [isCreatingCategory, setIsCreatingCategory] = useState(false);
 
   const { category, text, id } = todo;
@@ -46,16 +63,20 @@ const Todo = (todo: ITodo) => {
 
   const NEW_CATEGORY_KEY = '_new';
 
+  const changeCategory = (category: CATEGORY) => {
+    const changedTodo: ITodo = {
+      ...todo,
+      category: category,
+    };
+
+    setTodos([...todos.slice(0, index), changedTodo, ...todos.slice(index + 1)]);
+  };
+
   const handleChange = ({ target: { value } }: React.ChangeEvent<HTMLSelectElement>) => {
     if (value === NEW_CATEGORY_KEY) {
       setIsCreatingCategory(true);
     } else {
-      const newTodo: ITodo = {
-        ...todo,
-        category: value as ITodo['category'],
-      };
-
-      setTodos([...todos.slice(0, index), newTodo, ...todos.slice(index + 1)]);
+      changeCategory(value as CATEGORY);
     }
   };
 
@@ -63,23 +84,41 @@ const Todo = (todo: ITodo) => {
     setTodos([...todos.slice(0, index), ...todos.slice(index + 1)]);
   };
 
-  const onValid = () => {
-    console.log('HI');
+  const onValid: SubmitHandler<IForm> = ({ newCategoryName }) => {
+    changeCategory(newCategoryName);
+    setCategories((categories) => [...categories, newCategoryName]);
+
+    setIsCreatingCategory(false);
+    reset();
   };
 
   return (
     <Item className={`${category}`}>
       <Text>{text}</Text>
-      <ButtonContainer>
-        {isCreatingCategory ? (
-          <form onSubmit={handleSubmit(onValid)}>
+      {isCreatingCategory ? (
+        <Category>
+          <NewCategoryForm onSubmit={handleSubmit(onValid)}>
             <input
-              {...register('new', {
-                required: true,
+              {...register('newCategoryName', {
+                required: 'The field is empty',
+                pattern: {
+                  value: /[^_].*/,
+                  message: "Category name can't be started with _",
+                },
+                validate: (value) => {
+                  if (categories.includes(value)) {
+                    return 'Category already exists';
+                  } else {
+                    return true;
+                  }
+                },
               })}
             />
-          </form>
-        ) : (
+          </NewCategoryForm>
+          {errors?.newCategoryName?.message && <span>{errors.newCategoryName.message}</span>}
+        </Category>
+      ) : (
+        <Category>
           <select name="category" onChange={handleChange} defaultValue={todo.category}>
             {categories.map((category) => (
               <option key={category} value={category}>
@@ -90,9 +129,9 @@ const Todo = (todo: ITodo) => {
               Create a new category...
             </option>
           </select>
-        )}
-        <Button onClick={handleClickDelete}>&#128465;</Button>
-      </ButtonContainer>
+        </Category>
+      )}
+      <Button onClick={handleClickDelete}>&#128465;</Button>
     </Item>
   );
 };
