@@ -1,9 +1,9 @@
 import React from 'react';
 import { useState } from 'react';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 
-import { categoriesState, CATEGORY, ITodo, todosState } from '../atoms';
+import { categoriesState, CATEGORY, ITodo, todoFilterState, todosState } from '../atoms';
 import CreateCategory from './CreateCategory';
 
 const Item = styled.li`
@@ -37,6 +37,7 @@ const Category = styled.div`
 const Todo = (todo: ITodo) => {
   const [todos, setTodos] = useRecoilState(todosState);
   const [categories, setCategories] = useRecoilState(categoriesState);
+  const setFilter = useSetRecoilState(todoFilterState);
 
   const [isCreatingCategory, setIsCreatingCategory] = useState(false);
 
@@ -72,6 +73,7 @@ const Todo = (todo: ITodo) => {
     } else {
       _changeCategory(newCategoryName);
       setCategories((categories) => [...categories, newCategoryName]);
+      setFilter(newCategoryName);
       setIsCreatingCategory(false);
     }
   };
